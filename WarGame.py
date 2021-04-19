@@ -97,49 +97,74 @@ def units(player):
     return unit
 
 
-def isvalid_place(x, y, player):
-    if control_board[x][y] == player:
-        return True
-    elif control_board[x][y] == 0:
-        if y < BOARD_WIDTH - 1:
-            if x == 0:
-                if control_board[x][y + 1] == player or control_board[x][y - 1] == player or control_board[x + 1][
-                    y] == player:
-                    return True
-            if x == BOARD_HEIGHT - 1:
-                if control_board[x][y + 1] == player or control_board[x][y - 1] == player or control_board[x - 1][
-                    y] == player:
-                    return True
-            else:
-                if control_board[x - 1][y] == player or control_board[x + 1][y] == player:
-                    return True
-                elif control_board[x][y - 1] == player or control_board[x][y + 1] == player:
-                    return True
-        elif x == 0:
-            if control_board[x][y] == player or control_board[x][y - 1] == player:
-                return True
-        elif x == BOARD_HEIGHT - 1:
-            if control_board[x][y - 1] == player or control_board[x - 1][y] == player:
-                return True
-        else:
-            if control_board[x][y - 1] == player or control_board[x - 1][y] == player or control_board[x + 1][
-                y] == player:
-                return True
-    return False
-
-
-def isconnected(player):
-    cities = []
+def isconnected(x, y, player):
     connections = []
-    for r in range(BOARD_HEIGHT):
-        for c in range(BOARD_WIDTH):
-            if display_board[r][c] == CITIES and control_board[r][c] == player:
-                cities.append([r, c])
-
-    for r in range(BOARD_HEIGHT):
-        for c in range(BOARD_WIDTH):
-            if control_board[r][c] == player:
-                connections.append([r, c])
+    tried_moves = []
+    if control_board[x][y] == player:
+        if display_board[x][y] == CITIES:
+            return True
+    if control_board[(x + 1) % BOARD_HEIGHT][y % BOARD_WIDTH] == player:
+        if display_board[(x + 1) % BOARD_HEIGHT][y % BOARD_WIDTH] == CITIES:
+            return True
+        else:
+            connections.append([(x + 1) % BOARD_HEIGHT, y % BOARD_WIDTH])
+            tried_moves.append([(x + 1) % BOARD_HEIGHT, y % BOARD_WIDTH])
+    if control_board[(x) % BOARD_HEIGHT][(y + 1) % BOARD_WIDTH] == player:
+        if display_board[(x) % BOARD_HEIGHT][(y + 1) % BOARD_WIDTH] == CITIES:
+            return True
+        else:
+            connections.append([(x) % BOARD_HEIGHT, (y + 1) % BOARD_WIDTH])
+            tried_moves.append([(x) % BOARD_HEIGHT, (y + 1) % BOARD_WIDTH])
+    if control_board[x % BOARD_HEIGHT][(y - 1) % BOARD_WIDTH] == player:
+        if display_board[x % BOARD_HEIGHT][(y - 1) % BOARD_WIDTH] == CITIES:
+            return True
+        else:
+            connections.append([x % BOARD_HEIGHT, (y - 1) % BOARD_WIDTH])
+            tried_moves.append([x % BOARD_HEIGHT, (y - 1) % BOARD_WIDTH])
+    if control_board[(x - 1) % BOARD_HEIGHT][(y) % BOARD_WIDTH] == player:
+        if display_board[(x - 1) % BOARD_HEIGHT][(y) % BOARD_WIDTH] == CITIES:
+            return True
+        else:
+            connections.append([(x - 1) % BOARD_HEIGHT, (y) % BOARD_WIDTH])
+            tried_moves.append([(x - 1) % BOARD_HEIGHT, (y) % BOARD_WIDTH])
+    if len(connections) == 0:
+        return False
+    else:
+        while len(connections) != 0:
+            next_layer = []
+            for con in connections:
+                x = con[0]
+                y = con[1]
+                if control_board[(x + 1) % BOARD_HEIGHT][y % BOARD_WIDTH] == player:
+                    if [(x + 1) % BOARD_HEIGHT, y % BOARD_WIDTH] not in tried_moves:
+                        if display_board[(x + 1) % BOARD_HEIGHT][y % BOARD_WIDTH] == CITIES:
+                            return True
+                        else:
+                            next_layer.append([(x + 1) % BOARD_HEIGHT, y % BOARD_WIDTH])
+                            tried_moves.append([(x + 1) % BOARD_HEIGHT, y % BOARD_WIDTH])
+                if control_board[(x) % BOARD_HEIGHT][(y + 1) % BOARD_WIDTH] == player:
+                    if [(x) % BOARD_HEIGHT, (y + 1) % BOARD_WIDTH] not in tried_moves:
+                        if display_board[(x) % BOARD_HEIGHT][(y + 1) % BOARD_WIDTH] == CITIES:
+                            return True
+                        else:
+                            next_layer.append([(x) % BOARD_HEIGHT, (y + 1) % BOARD_WIDTH])
+                            tried_moves.append([(x) % BOARD_HEIGHT, (y + 1) % BOARD_WIDTH])
+                if control_board[x % BOARD_HEIGHT][(y - 1) % BOARD_WIDTH] == player:
+                    if [x % BOARD_HEIGHT, (y - 1) % BOARD_WIDTH] not in tried_moves:
+                        if display_board[x % BOARD_HEIGHT][(y - 1) % BOARD_WIDTH] == CITIES:
+                            return True
+                        else:
+                            next_layer.append([x % BOARD_HEIGHT, (y - 1) % BOARD_WIDTH])
+                            tried_moves.append([x % BOARD_HEIGHT, (y - 1) % BOARD_WIDTH])
+                if control_board[(x - 1) % BOARD_HEIGHT][(y) % BOARD_WIDTH] == player:
+                    if [(x - 1) % BOARD_HEIGHT, (y) % BOARD_WIDTH] not in tried_moves:
+                        if display_board[(x - 1) % BOARD_HEIGHT][(y) % BOARD_WIDTH] == CITIES:
+                            return True
+                        else:
+                            next_layer.append([(x - 1) % BOARD_HEIGHT, (y) % BOARD_WIDTH])
+            connections = next_layer
+            if len(connections) == 0:
+                return False
 
 
 def isvalid_attack(x, y, player):
@@ -281,7 +306,7 @@ def win(player):
                 city += 1
                 if control_board[r][c] == player:
                     city_player += 1
-    if units(opponent) < 1 or 0 < city_player == city:
+    if units(opponent) < 1 or city_player == 0:
         return True
     return False
 
@@ -374,7 +399,7 @@ while not game_over:
                         print('Down', [P1_POSx, P1_POSy])
                         # print(units_board)
                 # Placing Units
-                if event.key == pg.K_SPACE and isvalid_place(P1_POSx, P1_POSy, PLAYER1) and P1_Units > 0:
+                if event.key == pg.K_SPACE and isconnected(P1_POSx, P1_POSy, PLAYER1) and P1_Units > 0:
                     draw_board(display_board)
                     if control_board[P1_POSx][P1_POSy] == 0:
                         control_board[P1_POSx][P1_POSy] = PLAYER1
@@ -524,7 +549,7 @@ while not game_over:
                         print('Down', [P2_POSx, P2_POSy])
                         # print(units_board)
                 # Placing Units
-                if event.key == pg.K_SPACE and isvalid_place(P2_POSx, P2_POSy, PLAYER2) and P2_Units > 0:
+                if event.key == pg.K_SPACE and isconnected(P2_POSx, P2_POSy, PLAYER2) and P2_Units > 0:
                     draw_board(display_board)
                     if control_board[P2_POSx][P2_POSy] == 0:
                         control_board[P2_POSx][P2_POSy] = PLAYER2
@@ -636,7 +661,7 @@ while not game_over:
                         print('Control', control_board)
     # Win Conditions
     if win(PLAYER1):
-        print('Player 1 Wins !')
+        print('Player 1 Wins!')
         pg.time.wait(1000)
         game_over = True
     if win(PLAYER2):
