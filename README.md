@@ -3,16 +3,17 @@ This is turn based strategy game I made inspired by a board game I played with m
 The game ends when there is only one player who is in control of a city. One goes about doing this by recruiting units and capturing land (which can be used to recruit 
 more units).
 # Controls
-* L-Arrow: Move left
-* R-Arrow: Move right
-* U-Arrow: Move up
-* D-Arrow: Move down
+* Left Arrow: Move left
+* Right Arrow: Move right
+* Up Arrow: Move up
+* Down Arrow: Move down
 * Q: Player 1 end tune
 * W: Player 2 end turn
-* Space: place unit (note once a unit has been placed it can't be picked up again)
+* Space: place unit
 * Tab: Attack
 # Rules
-* Units must be placed either on or adjacent to tiles that are already owned
+* Units must be placed either on or adjacent to tiles that are already owned and connected to a city that is in the control of the player
+* Once a unit is placed it cannot be taken back
 
 Tile | Colour |Unit Weight
 --- | --- | ---
