@@ -7,7 +7,7 @@ more units).
 * Right Arrow: Move right
 * Up Arrow: Move up
 * Down Arrow: Move down
-* Q: Player 1 end tune
+* Q: Player 1 end turn
 * W: Player 2 end turn
 * Space: place unit
 * Tab: Attack
